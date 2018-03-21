@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000
 mongoose.Promise = global.Promise;
 // Connect to mongoose
 
-const dataBase = "MONGODB_URI: mongodb://heroku_7z6j87m0:4cah552k8tnrnsre78cgc7f0j6@ds121189.mlab.com:21189/heroku_7z6j87m0";
+const dataBase = "mongodb://heroku_6728806l:jp8cg70a04p201co6oh1c9r0tc@ds121189.mlab.com:21189/heroku_6728806l";
 mongoose.connect( process.env.MONGODB_URI ||'mongodb://localhost/vidjot-dev', {
   useMongoClient: true
 })
