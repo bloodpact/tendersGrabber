@@ -1,159 +1,70 @@
 const express = require('express');
-const exphbs  = require('express-handlebars');
 const methodOverride = require('method-override');
+const path = require('path');
+const app = express();
 const flash = require('connect-flash');
 const session = require('express-session');
-const bodyParser = require('body-parser');
+const port = process.env.PORT || 5000;
+const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+mongoose.promise = global.Promise;
 
-const app = express();
-const port = process.env.PORT || 5000
+//static
+app.use(express.static(path.join(__dirname, 'public')))
 
-// Map global promise - get rid of warning
-mongoose.Promise = global.Promise;
-// Connect to mongoose
+//exp session
+app.set('trust proxy', 1); // trust first proxy
+app.use(session({
+    secret: 'keyboard cat',
+    resave: true,
+    saveUninitialized: true
+}));
+//flash msg
+app.use(flash());
+//global vars
+app.use((req,res,next)=>{
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
 
-const dataBase = "mongodb://heroku_6728806l:jp8cg70a04p201co6oh1c9r0tc@ds121189.mlab.com:21189/heroku_6728806l";
-mongoose.connect( process.env.MONGODB_URI ||'mongodb://localhost/vidjot-dev', {
-  useMongoClient: true
+
+//routes
+const links = require('./routes/links');
+const users = require('./routes/users');
+
+mongoose.connect('mongodb://localhost/parser-dev', {
+    useNewUrlParser: true
 })
-  .then(() => console.log('MongoDB Connected...'))
-  .catch(err => console.log(err));
-
-// Load Idea Model
-require('./models/Idea');
-const Idea = mongoose.model('ideas');
-
-// Handlebars Middleware
+    .then(() => {
+        console.log('MongoDB connected')
+    })
+    .catch(err => console.log(err));
+//for puts req
+app.use(methodOverride('_method'));
+//mdw bodyparser
+app.use(bodyParser.urlencoded({extended: false}));
+//hbs
 app.engine('handlebars', exphbs({
-  defaultLayout: 'main'
+    defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars');
 
-// Body parser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// Method override middleware
-app.use(methodOverride('_method'));
-
-// Express session midleware
-app.use(session({
-  secret: 'secret',
-  resave: true,
-  saveUninitialized: true
-}));
-
-app.use(flash());
-
-// Global variables
-app.use(function(req, res, next){
-  res.locals.success_msg = req.flash('success_msg');
-  res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error');
-  next();
-});
-
-// Index Route
 app.get('/', (req, res) => {
-  const title = 'Welcome';
-  res.render('index', {
-    title: title
-  });
+    const title = 'Homepage';
+    res.render('index', {
+        title: title
+    })
 });
-
-// About Route
 app.get('/about', (req, res) => {
-  res.render('about');
-});
-
-// Idea Index Page
-app.get('/ideas', (req, res) => {
-  Idea.find({})
-    .sort({date:'desc'})
-    .then(ideas => {
-      res.render('ideas/index', {
-        ideas:ideas
-      });
-    });
-});
-
-// Add Idea Form
-app.get('/ideas/add', (req, res) => {
-  res.render('ideas/add');
-});
-
-// Edit Idea Form
-app.get('/ideas/edit/:id', (req, res) => {
-  Idea.findOne({
-    _id: req.params.id
-  })
-  .then(idea => {
-    res.render('ideas/edit', {
-      idea:idea
-    });
-  });
-});
-
-// Process Form
-app.post('/ideas', (req, res) => {
-  let errors = [];
-
-  if(!req.body.title){
-    errors.push({text:'Please add a title'});
-  }
-  if(!req.body.details){
-    errors.push({text:'Please add some details'});
-  }
-
-  if(errors.length > 0){
-    res.render('ideas/add', {
-      errors: errors,
-      title: req.body.title,
-      details: req.body.details
-    });
-  } else {
-    const newUser = {
-      title: req.body.title,
-      details: req.body.details
-    }
-    new Idea(newUser)
-      .save()
-      .then(idea => {
-        req.flash('success_msg', 'Video idea added');
-        res.redirect('/ideas');
-      })
-  }
-});
-
-// Edit Form process
-app.put('/ideas/:id', (req, res) => {
-  Idea.findOne({
-    _id: req.params.id
-  })
-  .then(idea => {
-    // new values
-    idea.title = req.body.title;
-    idea.details = req.body.details;
-
-    idea.save()
-      .then(idea => {
-        req.flash('success_msg', 'Video idea updated');
-        res.redirect('/ideas');
-      })
-  });
-});
-
-// Delete Idea
-app.delete('/ideas/:id', (req, res) => {
-  Idea.remove({_id: req.params.id})
-    .then(() => {
-      req.flash('success_msg', 'Video idea removed');
-      res.redirect('/ideas');
-    });
+    res.render('about')
 });
 
 
-app.listen(port, () =>{
-  console.log(`Server started on port ${port}`);
+app.use('/links', links);
+app.use('/users', users);
+app.listen(port, () => {
+    console.log(`server is on port ${port}`)
 });
