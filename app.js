@@ -8,6 +8,7 @@ const port = process.env.PORT || 5000;
 const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const passport = require('passport');
 mongoose.promise = global.Promise;
 
 //static
@@ -20,6 +21,9 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+//passport mw
+app.use(passport.initialize());
+app.use(passport.session());
 //flash msg
 app.use(flash());
 //global vars
@@ -27,6 +31,7 @@ app.use((req,res,next)=>{
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
+    res.locals.user = req.user || null
     next();
 });
 
@@ -34,6 +39,10 @@ app.use((req,res,next)=>{
 //routes
 const links = require('./routes/links');
 const users = require('./routes/users');
+
+//passport config
+
+require('./config/passport')(passport);
 
 mongoose.connect('mongodb://localhost/parser-dev', {
     useNewUrlParser: true

@@ -2,14 +2,14 @@
     <div class="col-md-6 mx-auto">
         <div class="card card-body">
             <h3 class="text-center">Accont login</h3>
-            <form action="">
+            <form action="/users/login" method="post">
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control">
+                    <input type="email" name="email" class="form-control">
                 </div>
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" class="form-control">
+                    <input type="password" name="password" class="form-control">
                 </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>

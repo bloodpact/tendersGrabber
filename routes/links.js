@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const {ensureAuthenticated} = require('../helpers/auth');
 
 //model
 require('../models/Link');
 const Link = mongoose.model('links');
 
-router.get('/', (req, res) => {
-    Link.find({})
+router.get('/', ensureAuthenticated, (req, res) => {
+    Link.find({user: req.user.id})
         .sort({date: 'desc'})
         .then(links => {
             res.render('links/index', {
@@ -15,23 +16,28 @@ router.get('/', (req, res) => {
             })
         })
 });
-router.get('/add', (req, res) => {
+router.get('/add',ensureAuthenticated, (req, res) => {
     res.render('links/add')
 });
 
 //edit
-router.get('/edit/:id',(req, res)=>{
+router.get('/edit/:id', ensureAuthenticated,(req, res)=>{
     Link.findOne({
         _id: req.params.id
     })
         .then(link=>{
-            res.render('links/edit', {
-                link:link
-            })
+            if(link.user != req.user.id){
+                req.flash('error_msg', 'not authorized')
+                res.redirect('/links')
+            } else{
+                res.render('links/edit', {
+                    link:link
+                })
+            }
         })
 });
 //put
-router.put('/:id',(req, res)=>{
+router.put('/:id', ensureAuthenticated, (req, res)=>{
     Link.findOne({
         _id: req.params.id
     })
@@ -45,7 +51,7 @@ router.put('/:id',(req, res)=>{
                 })
         })
 });
-router.post('/', (req, res) => {
+router.post('/', ensureAuthenticated, (req, res) => {
     let errors = [];
     if (!req.body.wordFind) {
         errors.push({text: "please enter the word"})
@@ -58,7 +64,8 @@ router.post('/', (req, res) => {
     } else {
         const newUser = {
             wordFind: req.body.wordFind,
-            link: `http://www.${req.body.wordFind}.com`
+            link: `http://www.${req.body.wordFind}.com`,
+            user: req.user.id
         };
         new Link(newUser)
             .save()
@@ -69,7 +76,7 @@ router.post('/', (req, res) => {
     }
 });
 //del
-router.delete('/:id', (req, res)=>{
+router.delete('/:id', ensureAuthenticated,(req, res)=>{
     Link.remove({
         _id: req.params.id
     })

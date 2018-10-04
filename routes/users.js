@@ -13,6 +13,18 @@ router.get('/login', (req, res)=>{
 router.get('/register', (req, res)=>{
     res.render('users/register')
 });
+router.get('/logout', (req, res)=>{
+    req.logOut();
+    req.flash('success_msg', 'Logged out')
+    res.redirect('/users/login')
+});
+router.post('/login', (req, res, next)=>{
+    passport.authenticate('local',{
+        successRedirect: '/links',
+        failureRedirect:'/users/login',
+        failureFlash: true
+    })(req, res, next)
+});
 router.post('/register', (req, res)=>{
     let errors =[];
     if (req.body.password !== req.body.password2) {
