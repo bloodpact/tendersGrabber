@@ -9,6 +9,9 @@ const exphbs = require('express-handlebars');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
+const axios = require('axios');
+
+
 mongoose.promise = global.Promise;
 
 //static
@@ -31,7 +34,7 @@ app.use((req,res,next)=>{
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
-    res.locals.user = req.user || null
+    res.locals.user = req.user || null;
     next();
 });
 
@@ -39,6 +42,7 @@ app.use((req,res,next)=>{
 //routes
 const links = require('./routes/links');
 const users = require('./routes/users');
+const results = require('./routes/results');
 
 //passport config
 
@@ -74,6 +78,7 @@ app.get('/about', (req, res) => {
 
 app.use('/links', links);
 app.use('/users', users);
+app.use('/results', results);
 app.listen(port, () => {
     console.log(`server is on port ${port}`)
 });
