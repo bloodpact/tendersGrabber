@@ -1,10 +1,17 @@
 <h1>Links</h1>
-
-    <div class="card mb-2">
-        <div class="card-body">
-            <h2>Res placeholder</h2>
-            {{data}}
+    {{#each data}}
+        <div class="card mb-2">
+            <div class="card-body">
+               <h5 class="card-title">{{title._text}}</h5>
+               <p class="card-text">{{pubDate._text}}</p>
+               <p class="card-text"><a href="{{link._text}}">Link</a> </p>
+               <p class="card-text test">{{description._text}}</p>
+            </div>
         </div>
-    </div>
+    {{/each}}
+
+
+
+
 
 

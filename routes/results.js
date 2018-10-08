@@ -29,7 +29,8 @@ router.get('/', (req, res)=>{
             currencyIdGeneral:'-1',
             publishDateFrom:'01.10.2018',
             publishDateTo:'05.10.2018',
-            regionDeleted:'false&oktmoIdsWithNested=on',
+            regionDeleted:false,
+            oktmoIdsWithNested:'on',
             sortBy:'UPDATE_DATE'
         },
         headers: {
@@ -38,10 +39,12 @@ router.get('/', (req, res)=>{
         },
     })
         .then((response)=>{
-            const resp = convert.xml2json(response.data, {compact: false, spaces: 5});
-            console.log(resp)
+            const resp = convert.xml2json(response.data, {compact: true, spaces: 4});
+            const result =(JSON.parse(resp).rss.channel.item);
+            console.log(result)
             res.render('results/index',{
-                data: resp
+                data:  result,
+                test: 'test1'
             })
         })
         .catch((err)=>{
