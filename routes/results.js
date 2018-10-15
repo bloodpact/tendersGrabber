@@ -41,10 +41,9 @@ router.get('/', (req, res)=>{
         .then((response)=>{
             const resp = convert.xml2json(response.data, {compact: true, spaces: 4});
             const result =(JSON.parse(resp).rss.channel.item);
-            console.log(result)
+            console.log(result[0].description)
             res.render('results/index',{
-                data:  result,
-                test: 'test1'
+                data:  result
             })
         })
         .catch((err)=>{

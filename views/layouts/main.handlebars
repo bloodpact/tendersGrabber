@@ -17,20 +17,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <script>
-
-// let strtest = $('.test')[0].textContent;
-let strArrTest = Array.from($('.test'))
-
-// $('.test')[0].textContent = '';
-strArrTest.forEach(function(element) {
-    let innerText = element.textContent
-    element.textContent =''
-    let fragment = $.parseHTML(innerText);
-    $('.test').append(fragment);
-});
-
-
-
+function xmlPartHTML(arr){
+    arr.reduce(function (previousValue, currentValue, i, array) {
+        fragment = ($.parseHTML(currentValue.textContent));
+        for (k in fragment){
+            const elem = document.createElement('p');
+            elem.textContent = fragment[k].textContent;
+            if (fragment[k].textContent !==''){
+                document.querySelectorAll('.xmlParsed')[i].appendChild(elem)
+            }
+         }
+        $('.xml').remove();
+        for (let k = 0 ; k <= 6 ; k++){
+            document.querySelectorAll('.xmlParsed')[i].removeChild( document.querySelectorAll('.xmlParsed')[i].firstChild)
+        }
+    }, 0)
+}
+xmlPartHTML(Array.from($('.xml')))
 </script>
 </body>
 </html>
