@@ -8,102 +8,58 @@ const convert = require('xml-js');
 require('../models/Link');
 const Link = mongoose.model('links');
 
-function test(){
- return  Link.find()
+async function getLinks(){
+    const wordsToFind = await  Link.find()
         .sort({date: 'desc'})
-        .then(links => {
-            console.log(links)
-            for (i in links){
-
-             return   axios({
-                    method:'get',
-                    url : 'http://zakupki.gov.ru/epz/order/quicksearch/rss',
-                    params: {
-                        searchString: links[i].wordFind,
-                        morphology:'on',
-                        openMode:'USE_DEFAULT_PARAMS',
-                        pageNumber:1,
-                        sortDirection:false,
-                        recordsPerPage: '_10',
-                        showLotsInfoHidden:false,
-                        fz44:'on',
-                        fz223:'on',
-                        ppRf615:'on',
-                        af:'on',
-                        ca:'on',
-                        pc:'on',
-                        pa:'on',
-                        currencyIdGeneral:'-1',
-                        publishDateFrom:'01.10.2018',
-                        publishDateTo:'05.10.2018',
-                        regionDeleted:false,
-                        oktmoIdsWithNested:'on',
-                        sortBy:'UPDATE_DATE'
-                    },
-                    headers: {
-                        'accept': 'application/json',
-                        'content-type': 'text/plain;charset=utf-8'
-                    },
-                })
-                    .then((response)=>{
-                        const resp = convert.xml2json(response.data, {compact: true, spaces: 4});
-                        const result = (JSON.parse(resp).rss.channel.item);
-                        return  result
-                    })
-                    .catch((err)=>{
-                        console.log(err)
-                    });
-            }
-    });
+        .then(links => {return links})
+    return wordsToFind
 }
-test().then(function(result) { console.log(result, 1); })
 
-// testAxios()
-router.get('/', (req, res)=>{
-    Link.find()
-        .sort({date: 'desc'})
-        .then(links => {
-            axios({
-                method:'get',
-                url : 'http://zakupki.gov.ru/epz/order/quicksearch/rss',
-                params: {
-                    searchString: links[0].wordFind,
-                    morphology:'on',
-                    openMode:'USE_DEFAULT_PARAMS',
-                    pageNumber:1,
-                    sortDirection:false,
-                    recordsPerPage: '_10',
-                    showLotsInfoHidden:false,
-                    fz44:'on',
-                    fz223:'on',
-                    ppRf615:'on',
-                    af:'on',
-                    ca:'on',
-                    pc:'on',
-                    pa:'on',
-                    currencyIdGeneral:'-1',
-                    publishDateFrom:'01.10.2018',
-                    publishDateTo:'05.10.2018',
-                    regionDeleted:false,
-                    oktmoIdsWithNested:'on',
-                    sortBy:'UPDATE_DATE'
-                },
-                headers: {
-                    'accept': 'application/json',
-                    'content-type': 'text/plain;charset=utf-8'
-                },
-            })
-                .then((response)=>{
-                    const resp = convert.xml2json(response.data, {compact: true, spaces: 4});
-                    const result =(JSON.parse(resp).rss.channel.item);
-                    res.render('results/index',{
-                        data:  result
-                    });
-                })
-                .catch((err)=>{
-                    console.log(err)
-                });
-        });
+async function getTendersGET(word){
+  const response = await axios.get('http://zakupki.gov.ru/epz/order/quicksearch/rss', {
+        params: {
+            searchString: word,
+            morphology:'on',
+            openMode:'USE_DEFAULT_PARAMS',
+            pageNumber:1,
+            sortDirection:false,
+            recordsPerPage: '_10',
+            showLotsInfoHidden:false,
+            fz44:'on',
+            fz223:'on',
+            ppRf615:'on',
+            af:'on',
+            ca:'on',
+            pc:'on',
+            pa:'on',
+            currencyIdGeneral:'-1',
+            publishDateFrom:'01.10.2018',
+            publishDateTo:'05.10.2018',
+            regionDeleted:false,
+            oktmoIdsWithNested:'on',
+            sortBy:'UPDATE_DATE'
+        },
+        headers: {
+            'accept': 'application/json',
+            'content-type': 'text/plain;charset=utf-8'
+        }
+    });
+  const result = (JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 4})).rss.channel.item);
+  return result
+}
+async function getArrTenders(){
+    const arrWords = await getLinks();
+    for (let i of arrWords) {
+        const arrTenders = await getTendersGET(i.wordFind);
+        console.log(arrTenders)
+    }
+
+}
+getArrTenders();
+router.get('/', async(req, res)=>{
+    let tenders = await getLinks();
+    // console.log(tenders)
+    res.send(tenders);
 });
 
 module.exports = router;
