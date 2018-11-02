@@ -4,6 +4,8 @@
        <div class="card-body">
            <h5 class="card-title">{{wordFind}}</h5>
            <p class="card-text">{{link}}</p>
+           <p class="card-text">From {{from}}</p>
+           <p class="card-text">To {{to}}</p>
            <a class="btn btn-dark btn-block mb-2" href="/links/edit/{{id}}">Edit</a>
            <form action="/links/{{id}}?_method=DELETE" method="post">
                <input type="hidden" name="_method" value="DELETE">

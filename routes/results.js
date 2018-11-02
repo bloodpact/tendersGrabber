@@ -3,18 +3,19 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const {ensureAuthenticated} = require('../helpers/auth');
 const axios = require('axios');
+const moment = require('moment');
 const convert = require('xml-js');
 
 require('../models/Link');
 const Link = mongoose.model('links');
 
-async function getLinks(){
-    return await  Link.find()
+async function getLinks(userID){
+    return await  Link.find({user: userID})
         .sort({date: 'desc'})
         .then(links => {return links});
 }
 
-async function requestToFindTenders(word){
+async function requestToFindTenders(word, from, to){
   const response = await axios.get('http://zakupki.gov.ru/epz/order/quicksearch/rss', {
         params: {
             searchString: word,
@@ -32,8 +33,8 @@ async function requestToFindTenders(word){
             pc:'on',
             pa:'on',
             currencyIdGeneral:'-1',
-            publishDateFrom:'01.10.2018',
-            publishDateTo:'05.10.2018',
+            publishDateFrom: from,
+            publishDateTo:to,
             regionDeleted:false,
             oktmoIdsWithNested:'on',
             sortBy:'UPDATE_DATE'
@@ -44,17 +45,16 @@ async function requestToFindTenders(word){
         }
     });
     return (JSON.parse(convert.xml2json(response.data, {compact: true, spaces: 4})).rss.channel.item);
-
 }
-async function getArrTenders(){
-    const arrWords = await getLinks();
+async function getArrTenders(userID){
+    const arrWords = await getLinks(userID);
     return  await Promise.all(arrWords.map(async (currentValue) => {
-            return await requestToFindTenders(currentValue.wordFind);
+            return await requestToFindTenders(currentValue.wordFind, currentValue.from, currentValue.to);
         })
     );
 }
 router.get('/',ensureAuthenticated, async(req, res)=>{
-    let tenders = await getArrTenders();
+    let tenders = await getArrTenders(req.user.id);
     res.render('results/index',{
         data:  [].concat.apply([], tenders)
     });

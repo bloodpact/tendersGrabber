@@ -17,6 +17,12 @@ const LinkSchema = new Schema({
     date:{
         type: Date,
         default: Date.now
+    },
+    from:{
+        type: String
+    },
+    to:{
+        type: String
     }
 });
 

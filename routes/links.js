@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const {ensureAuthenticated} = require('../helpers/auth');
+const moment = require('moment');
 
 //model
 require('../models/Link');
@@ -26,7 +27,7 @@ router.get('/edit/:id', ensureAuthenticated,(req, res)=>{
         _id: req.params.id
     })
         .then(link=>{
-            if(link.user != req.user.id){
+            if(link.user !== req.user.id){
                 req.flash('error_msg', 'not authorized')
                 res.redirect('/links')
             } else{
@@ -44,6 +45,8 @@ router.put('/:id', ensureAuthenticated, (req, res)=>{
         .then(link =>{
             link.wordFind = req.body.wordFind;
             link.link = `http://www.${req.body.wordFind}.com`;
+            link.from = moment(req.body.from).format('DD.MM.YYYY');
+            link.to = moment(req.body.to).format('DD.MM.YYYY');
             link.save()
                 .then(link=>{
                     req.flash('success_msg' , 'Link updated');
@@ -65,11 +68,14 @@ router.post('/', ensureAuthenticated, (req, res) => {
         const newUser = {
             wordFind: req.body.wordFind,
             link: `http://www.${req.body.wordFind}.com`,
-            user: req.user.id
+            user: req.user.id,
+            from: moment(req.body.from).format('DD.MM.YYYY'),
+            to: moment(req.body.to).format('DD.MM.YYYY')
         };
         new Link(newUser)
             .save()
             .then(link => {
+                console.log(link);
                 req.flash('success_msg' , 'Link added');
                 res.redirect('/links')
             })
@@ -77,7 +83,7 @@ router.post('/', ensureAuthenticated, (req, res) => {
 });
 //del
 router.delete('/:id', ensureAuthenticated,(req, res)=>{
-    Link.remove({
+    Link.deleteOne({
         _id: req.params.id
     })
         .then(()=>{
