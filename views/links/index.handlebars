@@ -3,7 +3,8 @@
    <div class="card mb-2">
        <div class="card-body">
            <h5 class="card-title">{{wordFind}}</h5>
-           <p class="card-text">{{link}}</p>
+           <p class="card-text"><a href="http://zakupki.gov.ru/epz/order/extendedsearch/results.html?searchString={{wordFind}}&morphology=on&pageNumber=1&sortDirection=false&recordsPerPage=_10&showLotsInfoHidden=false&fz44=on&fz223=on&ppRf615=on&af=true&ca=true&pc=true&pa=true&currencyIdGeneral=-1&publishDateFrom={{from}}&publishDateTo={{to}}&regionDeleted=false&sortBy=UPDATE_DATE&openMode=USE_DEFAULT_PARAMS">
+               прямая ссылка на сайт госзакупок по слову {{wordFind}} </a></p>
            <p class="card-text">From {{from}}</p>
            <p class="card-text">To {{to}}</p>
            <a class="btn btn-dark btn-block mb-2" href="/links/edit/{{id}}">Edit</a>
