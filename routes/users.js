@@ -2,40 +2,46 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const passport = require('passport');
 
 require('../models/User');
 const User = mongoose.model('users');
 
 router.post("/login", (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err) {
+            console.log(err)
             return next(err);
         }
         if (!user) {
             return res.status(401).send([user, "Cannot log in", info])
         }
-        req.login(user, (err) => {
-            console.log(req.session)
-            res.send(user._id)
+        req.login(user, {session: false}, (err) => {
+            if (err) {
+                res.send(err);
+            }
+            const token = jwt.sign(user.toJSON(), 'gzGrabberSecret');
+            console.log(user)
+            return res.status(200).json({user, token});
         })
     })(req, res, next)
 })
 router.post('/register', (req, res)=>{
     let errors =[];
     if (req.body.password !== req.body.password2) {
-        errors.push({text: 'Passwords do not match'});
+        errors.push({msg: 'Passwords do not match'});
     }
     if (req.body.password.length < 4){
-        errors.push({text: 'Password should have more than 4 characters'});
+        errors.push({msg: 'Password should have more than 4 characters'});
     }
     if (errors.length > 0){
-        res.send(errors)
+        res.status(403).json(errors)
     } else {
         User.findOne({email: req.body.email})
             .then(user=>{
                 if(user){
-                    res.send('Email is already registered')
+                  return  res.status(403).json({msg:'Email is already registered'})
                 }else{
                     const newUser = new User({
                         name:req.body.name,
@@ -47,14 +53,13 @@ router.post('/register', (req, res)=>{
                             if (err) throw  err;
                             newUser.password = hash;
                             newUser.save()
-                                .catch(err=>{
-                                    console.log(err);
-                                    return;
-                                })
+                            .catch(err=>{
+                            console.log(err);
                         })
-                    });
-                }
-            });
+                    })
+                });
+            }
+        });
     }
 });
 module.exports = router;

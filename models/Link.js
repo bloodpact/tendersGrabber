@@ -18,10 +18,10 @@ const LinkSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    from:{
+    dateFrom:{
         type: String
     },
-    to:{
+    dateTo:{
         type: String
     }
 });

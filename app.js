@@ -9,20 +9,14 @@ const cookieSession = require('cookie-session');
 
 mongoose.promise = global.Promise;
 app.use(morgan('dev'));
-// app.options('*', cors({credentials: true}, {origin: 'http://localhost:8080'}))
 app.use(cors());
-// app.use(cors())
 
 // app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(cookieSession({
-    name: 'mysession',
-    keys: ['vueauthrandomkey'],
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-}))
+
 //passport
 app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.session());
 //routes
 const links = require('./routes/links');
 const users = require('./routes/users');

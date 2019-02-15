@@ -4,55 +4,74 @@ const mongoose = require('mongoose');
 const {ensureAuthenticated} = require('../config/auth');
 const moment = require('moment');
 
-require('../models/link');
+require('../models/Link');
 const Link = mongoose.model('links');
-//check ensureAuthenticated for?
+
 router.get('/', ensureAuthenticated, (req, res) => {
-    Link.find({user: req.user.id})
+    Link.find({user: req.query.user})
         .sort({date: 'desc'})
         .then(links => {
             res.send(links)
         })
-    console.log(req.session.passport.user)
+        .catch(err=>{
+            return res.status(400).json(err)
+        })
+    });
+
+
+
+router.put('/:id', ensureAuthenticated, (req, res)=>{
+    Link.findOne({
+            _id: req.params.id
+        })
+        .then(link =>{
+            link.wordFind = req.body.wordFind;
+            link.link = `http://www.${req.body.wordFind}.com`;
+            link.from = req.body.dateFrom;
+            link.to = req.body.dateTo;
+            link.save()
+                .catch(err=>{
+                    return res.status(400).json({msg:err})
+                })
+        })
 });
-
-
-router.get('/add', (req, res) => {
-    res.send('add links')
-});
-
-router.get('/edit:id', (req, res) => {
-    res.send('edit links')
-});
-
-router.put('/:id', (req, res) => {
-    res.send('update links')
-});
-
-router.post('/', (req, res) =>{
+router.post('/',ensureAuthenticated, (req, res) =>{
     let errors = [];
     if (!req.body.wordFind) {
         errors.push({text: "please enter the word"})
     }
     if (errors.length > 0) {
-        res.render('links/add', {
+        res.send({
             errors: errors,
             wordFind: req.body.wordFind
         })
     } else {
-        const newUser = {
+        const newLink = {
             wordFind: req.body.wordFind,
             link: `http://www.${req.body.wordFind}.com`,
             user: req.body.id,
-            from: (req.body.from),
-            to: (req.body.to)
+            dateFrom:req.body.dateFrom,
+            dateTo: req.body.dateTo
         };
-        new Link(newUser)
+        console.log(req.body)
+        new Link(newLink)
             .save()
+            .catch(err=>{
+             return  res.status(400).json({msg:err})
+            })
     }
 })
 
-router.delete('/:id', (req, res)=>{
-    res.send('delete')
+router.delete('/:id', ensureAuthenticated,(req, res)=>{
+    Link.deleteOne({
+            _id: req.params.id
+        })
+        .then(()=>{
+            res.status(200).json({msg:'successful deleted'})
+        })
+        .catch(err=>{
+            console.log(err)
+        })
 });
+
 module.exports = router;
