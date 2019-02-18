@@ -8,17 +8,29 @@ require('../models/Link');
 const Link = mongoose.model('links');
 
 router.get('/', ensureAuthenticated, (req, res) => {
-    Link.find({user: req.query.user})
+    Link.find({
+        user: req.query.user
+        })
         .sort({date: 'desc'})
         .then(links => {
             res.send(links)
         })
         .catch(err=>{
-            return res.status(400).json(err)
+        return res.status(400).json(err)
+    })
+});
+
+router.get('/:id',ensureAuthenticated, (req, res) =>{
+    Link.findOne({
+        _id: req.params.id
         })
-    });
-
-
+        .then(link=>{
+         res.send(link)
+         })
+        .catch(err=>{
+         return res.status(400).json(err)
+    })
+});
 
 router.put('/:id', ensureAuthenticated, (req, res)=>{
     Link.findOne({
@@ -27,8 +39,8 @@ router.put('/:id', ensureAuthenticated, (req, res)=>{
         .then(link =>{
             link.wordFind = req.body.wordFind;
             link.link = `http://www.${req.body.wordFind}.com`;
-            link.from = req.body.dateFrom;
-            link.to = req.body.dateTo;
+            link.dateFrom = req.body.dateFrom;
+            link.dateTo = req.body.dateTo;
             link.save()
                 .catch(err=>{
                     return res.status(400).json({msg:err})
@@ -53,9 +65,11 @@ router.post('/',ensureAuthenticated, (req, res) =>{
             dateFrom:req.body.dateFrom,
             dateTo: req.body.dateTo
         };
-        console.log(req.body)
         new Link(newLink)
             .save()
+            .then(()=>{
+                res.status(200).json({msg:'successful updated'})
+            })
             .catch(err=>{
              return  res.status(400).json({msg:err})
             })
@@ -70,7 +84,7 @@ router.delete('/:id', ensureAuthenticated,(req, res)=>{
             res.status(200).json({msg:'successful deleted'})
         })
         .catch(err=>{
-            console.log(err)
+            res.status(400).json({msg:err})
         })
 });
 
