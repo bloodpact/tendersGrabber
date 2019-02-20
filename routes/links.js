@@ -16,7 +16,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
             res.send(links)
         })
         .catch(err=>{
-        return res.status(400).json(err)
+        return res.status(400).json({msg:err})
     })
 });
 
@@ -28,7 +28,7 @@ router.get('/:id',ensureAuthenticated, (req, res) =>{
          res.send(link)
          })
         .catch(err=>{
-         return res.status(400).json(err)
+         return res.status(400).json({msg:err})
     })
 });
 
@@ -42,9 +42,9 @@ router.put('/:id', ensureAuthenticated, (req, res)=>{
             link.dateFrom = req.body.dateFrom;
             link.dateTo = req.body.dateTo;
             link.save()
-                .catch(err=>{
-                    return res.status(400).json({msg:err})
-                })
+        })
+        .catch(err=>{
+             res.status(400).json({msg:err})
         })
 });
 router.post('/',ensureAuthenticated, (req, res) =>{

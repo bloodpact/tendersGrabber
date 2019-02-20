@@ -22,7 +22,6 @@ router.post("/login", (req, res, next) => {
                 res.send(err);
             }
             const token = jwt.sign(user.toJSON(), 'gzGrabberSecret');
-            console.log(user)
             return res.status(200).json({user, token});
         })
     })(req, res, next)
