@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const {ensureAuthenticated} = require('../config/auth');
+const {formateDate} = require('../helpers/dateFormater');
 const moment = require('moment');
 
 require('../models/Link');
@@ -13,6 +14,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
         })
         .sort({date: 'desc'})
         .then(links => {
+            console.log(links)
             res.send(links)
         })
         .catch(err=>{
@@ -63,7 +65,8 @@ router.post('/',ensureAuthenticated, (req, res) =>{
             link: `http://www.${req.body.wordFind}.com`,
             user: req.body.id,
             dateFrom:req.body.dateFrom,
-            dateTo: req.body.dateTo
+            dateTo: req.body.dateTo,
+            check24: req.body.check24
         };
         new Link(newLink)
             .save()

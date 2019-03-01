@@ -23,6 +23,9 @@ const LinkSchema = new Schema({
     },
     dateTo:{
         type: String
+    },
+    check24:{
+        type: Boolean
     }
 });
 
