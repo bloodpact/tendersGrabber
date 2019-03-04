@@ -12,7 +12,6 @@ const Link = mongoose.model('links');
 async function getLinks(userID){
     return await  Link.find({user: userID})
                       .then(links => {
-                          console.log(links)
                           return links
                       })
                       .catch (err=>{console.log(err)});
@@ -49,40 +48,29 @@ async function requestToFindTenders(word, from ,to){
 }
 async function getArrTenders(userID, from, to){
     const arrWords = await getLinks(userID);
-    // console.log(arguments[1])
-    try{
-        if (arguments[1] !== undefined){
+        try{
             return  await Promise.all(arrWords.map(async (currentValue) => {
-                console.log('no dates')
-                    //if 24check
+                    //check for 24 hours or range of dates, smthng wrong with
+                    //calculating dates on server
+                if (currentValue.check24){
+                     resp = await requestToFindTenders(currentValue.wordFind,
+                        (from),
+                        (to));
+                    return resp
+                } else{
                     return await requestToFindTenders(currentValue.wordFind,
-                        from,
-                        to);
-                })
-            )
-        } else {
-            return  await Promise.all(arrWords.map(async (currentValue) => {
-                    console.log('with dates')
-                    //if checking range of dates
-                return await requestToFindTenders(currentValue.wordFind,
-                    formateDate(currentValue.dateFrom),
-                    formateDate(currentValue.dateTo))
+                        (currentValue.dateFromP),
+                        (currentValue.dateToP));
+                }
             })
             )
-        }
     } catch (err){
         console.log(err)
     }
 }
 
 router.get('/',ensureAuthenticated, async(req, res)=>{
-    if(req.query.from !== undefined && req.query.to !== undefined){
         let tenders = await getArrTenders(req.query.user, req.query.from, req.query.to);
         res.send([].concat.apply([], tenders))
-    } else {
-        let tenders = await getArrTenders(req.query.user);
-        res.send([].concat.apply([], tenders))
-
-    }
 });
 module.exports = router;

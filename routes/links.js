@@ -14,7 +14,6 @@ router.get('/', ensureAuthenticated, (req, res) => {
         })
         .sort({date: 'desc'})
         .then(links => {
-            console.log(links)
             res.send(links)
         })
         .catch(err=>{
@@ -34,21 +33,46 @@ router.get('/:id',ensureAuthenticated, (req, res) =>{
     })
 });
 
-router.put('/:id', ensureAuthenticated, (req, res)=>{
-    Link.findOne({
-            _id: req.params.id
-        })
-        .then(link =>{
-            link.wordFind = req.body.wordFind;
-            link.link = `http://www.${req.body.wordFind}.com`;
-            link.dateFrom = req.body.dateFrom;
-            link.dateTo = req.body.dateTo;
-            link.save()
-        })
-        .catch(err=>{
-             res.status(400).json({msg:err})
-        })
-});
+// router.put('/:id', ensureAuthenticated, (req, res)=>{
+//     console.log(req.body)
+//     Link.findOne({
+//             _id: req.params.id
+//         })
+//         .then(link =>{
+//             link.wordFind = req.body.wordFind;
+//             link.link = `http://www.${req.body.wordFind}.com`;
+//             link.dateFrom = req.body.dateFrom;
+//             link.dateTo = req.body.dateTo;
+//             link.check24 = req.body.check24;
+//             link.dateFromP = formateDate(req.body.dateFrom);
+//             link.dateToP = formateDate(req.body.dateTo);
+//             link.save()
+//         })
+//         .catch(err=>{
+//              res.status(400).json({msg:err})
+//         })
+// });
+router.put('/:id',  ensureAuthenticated, (req, res)=>{
+    // console.log(req.body)
+    Link.findOneAndUpdate(
+        {_id: req.params.id}, // критерий выборки
+        {
+            $set: {
+                wordFind: req.body.wordFind,
+                link : `http://www.${req.body.wordFind}.com`,
+                dateFrom : req.body.dateFrom,
+                dateTo : req.body.dateTo,
+                check24 : req.body.check24,
+                dateFromP : formateDate(req.body.dateFrom),
+                dateToP :formateDate(req.body.dateTo)
+        }
+        }, // параметр обновления
+        function(err, result){
+            // console.log(result);
+        }
+    );
+})
+
 router.post('/',ensureAuthenticated, (req, res) =>{
     let errors = [];
     if (!req.body.wordFind) {
@@ -66,13 +90,12 @@ router.post('/',ensureAuthenticated, (req, res) =>{
             user: req.body.id,
             dateFrom:req.body.dateFrom,
             dateTo: req.body.dateTo,
+            dateFromP: moment(req.body.dateFrom).format("DD.MM.YYYY"),
+            dateToP: moment(req.body.dateTo).format("DD.MM.YYYY"),
             check24: req.body.check24
         };
         new Link(newLink)
             .save()
-            .then(()=>{
-                res.status(200).json({msg:'successful updated'})
-            })
             .catch(err=>{
              return  res.status(400).json({msg:err})
             })

@@ -24,6 +24,11 @@ const LinkSchema = new Schema({
     dateTo:{
         type: String
     },
+    dateFromP:{
+        type: String
+    },dateToP:{
+        type: String
+    },
     check24:{
         type: Boolean
     }
