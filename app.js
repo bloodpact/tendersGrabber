@@ -47,7 +47,7 @@ app.use('/results', results);
 
 app.get('/',(req, res)=>{
     res.send('root')
-})
+});
 
 
 mailer.extend(app, {
