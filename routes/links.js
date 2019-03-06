@@ -53,9 +53,8 @@ router.get('/:id',ensureAuthenticated, (req, res) =>{
 //         })
 // });
 router.put('/:id',  ensureAuthenticated, (req, res)=>{
-    // console.log(req.body)
     Link.findOneAndUpdate(
-        {_id: req.params.id}, // критерий выборки
+        {_id: req.params.id},
         {
             $set: {
                 wordFind: req.body.wordFind,
@@ -66,9 +65,6 @@ router.put('/:id',  ensureAuthenticated, (req, res)=>{
                 dateFromP : formateDate(req.body.dateFrom),
                 dateToP :formateDate(req.body.dateTo)
         }
-        }, // параметр обновления
-        function(err, result){
-            // console.log(result);
         }
     );
 })

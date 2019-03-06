@@ -14,7 +14,9 @@ async function getLinks(userID){
                       .then(links => {
                           return links
                       })
-                      .catch (err=>{console.log(err)});
+                      .catch (err=>{
+                          return res.status(400).json({msg:err})
+                      });
 }
 
 async function requestToFindTenders(word, from ,to){
@@ -65,7 +67,7 @@ async function getArrTenders(userID, from, to){
             })
             )
     } catch (err){
-        console.log(err)
+            return res.status(400).json({msg:err})
     }
 }
 

@@ -7,6 +7,11 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const cookieSession = require('cookie-session');
 
+const exphbs = require('express-handlebars');
+const mailer = require('express-mailer');
+
+
+
 mongoose.promise = global.Promise;
 app.use(morgan('dev'));
 app.use(cors());
@@ -42,6 +47,38 @@ app.use('/results', results);
 app.get('/',(req, res)=>{
     res.send('root')
 })
+
+app.engine('handlebars', exphbs({}));
+app.set('view engine', 'handlebars');
+mailer.extend(app, {
+    from: 'hell_scream@mail.ru',
+    host: 'smtp.mail.ru', // hostname
+    secureConnection: true, // use SSL
+    port: 465, // port for secure SMTP
+    transportMethod: 'SMTP', // default is SMTP. Accepts anything that nodemailer accepts
+    auth: {
+        user: 'hell_scream@mail.ru',
+        pass: 'safer'
+    }
+});
+
+
+app.get('/results/mail', function (req, res, next) {
+    app.mailer.send('email', {
+        to: req.query.user, // REQUIRED. This can be a comma delimited string just like a normal email to field.
+        subject: 'tenders', // REQUIRED.
+        links: req.query.links // All additional properties are also passed to the template as local variables.
+    }, function (err) {
+        if (err) {
+            // handle error
+            console.log(err);
+            res.send('There was an error sending the email');
+            return;
+        }
+        res.send('Email Sent');
+    });
+});
+
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => {
