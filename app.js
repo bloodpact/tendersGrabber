@@ -5,12 +5,17 @@ const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const exphbs = require('express-handlebars');
 
 
 mongoose.promise = global.Promise;
 app.use(morgan('dev'));
 app.use(cors());
-
+//api register
+app.engine('handlebars', exphbs({
+    defaultLayout: 'main'
+}));
+app.set('view engine', 'handlebars');
 
 app.use(bodyParser.json());
 

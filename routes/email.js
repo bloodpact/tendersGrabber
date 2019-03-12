@@ -5,7 +5,6 @@ const hbs = require('nodemailer-express-handlebars');
 const {hbsOpts, transportOpts} = require('../helpers/emailOpts');
 
 
-
 router.get('/', function (req, res, next) {
     let transporter = nodeMailer.createTransport(transportOpts);
     transporter.use('compile', hbs(hbsOpts));
