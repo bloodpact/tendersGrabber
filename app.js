@@ -11,13 +11,15 @@ const exphbs = require('express-handlebars');
 mongoose.promise = global.Promise;
 app.use(morgan('dev'));
 app.use(cors());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
 //api register
 app.engine('handlebars', exphbs({
     defaultLayout: 'main'
 }));
 app.set('view engine', 'handlebars');
 
-app.use(bodyParser.json());
+
 
 //passport
 app.use(passport.initialize());
@@ -31,14 +33,15 @@ const email = require('./routes/email')
 
 require('./config/passport')(passport);
 
-//mongo
-mongoose.connect('mongodb://localhost/parser-dev', {
-        useNewUrlParser: true
-    })
-    .then(() => {
-        console.log('MongoDB connected')
-    })
+//DB CONN
+const db = require('./config/env')
+console.log(process.env.NODE_ENV)
+mongoose.connect(db.mongoURL,{
+    useNewUrlParser: true
+})
+    .then(console.log('MongoDB connected'))
     .catch(err => console.log(err));
+
 
 //routes
 app.use('/links', links);

@@ -33,32 +33,14 @@ router.get('/:id',ensureAuthenticated, (req, res) =>{
     })
 });
 
-// router.put('/:id', ensureAuthenticated, (req, res)=>{
-//     console.log(req.body)
-//     Link.findOne({
-//             _id: req.params.id
-//         })
-//         .then(link =>{
-//             link.wordFind = req.body.wordFind;
-//             link.link = `http://www.${req.body.wordFind}.com`;
-//             link.dateFrom = req.body.dateFrom;
-//             link.dateTo = req.body.dateTo;
-//             link.check24 = req.body.check24;
-//             link.dateFromP = formateDate(req.body.dateFrom);
-//             link.dateToP = formateDate(req.body.dateTo);
-//             link.save()
-//         })
-//         .catch(err=>{
-//              res.status(400).json({msg:err})
-//         })
-// });
 router.put('/:id',  ensureAuthenticated, (req, res)=>{
     Link.findOneAndUpdate(
-        {_id: req.params.id},
+        {
+            _id: req.params.id
+        },
         {
             $set: {
                 wordFind: req.body.wordFind,
-                link : `http://www.${req.body.wordFind}.com`,
                 dateFrom : req.body.dateFrom,
                 dateTo : req.body.dateTo,
                 check24 : req.body.check24,
@@ -67,6 +49,7 @@ router.put('/:id',  ensureAuthenticated, (req, res)=>{
         }
         }
     );
+    res.end()
 })
 
 router.post('/',ensureAuthenticated, (req, res) =>{
@@ -82,7 +65,6 @@ router.post('/',ensureAuthenticated, (req, res) =>{
     } else {
         const newLink = {
             wordFind: req.body.wordFind,
-            link: `http://www.${req.body.wordFind}.com`,
             user: req.body.id,
             dateFrom:req.body.dateFrom,
             dateTo: req.body.dateTo,

@@ -26,6 +26,9 @@ router.post("/login", (req, res, next) => {
         })
     })(req, res, next)
 })
+router.get('/register', (req, res)=>{
+    res.render('users/register')
+});
 router.post('/register', (req, res)=>{
     let errors =[];
     if (req.body.password !== req.body.password2) {
@@ -61,5 +64,6 @@ router.post('/register', (req, res)=>{
             }
         });
     }
+    res.end('registered')
 });
 module.exports = router;
