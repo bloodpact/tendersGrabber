@@ -49,29 +49,29 @@ async function requestToFindTenders(word, from ,to){
 }
 async function getArrTenders(userID, from, to){
     const arrWords = await getLinks(userID);
-        try{
-            return  await Promise.all(arrWords.map(async (currentValue) => {
-                    //check for 24 hours or range of dates, smthng wrong with
-                    //calculating dates on server
-                if (currentValue.check24){
-                     resp = await requestToFindTenders(currentValue.wordFind,
+    try{
+        return  await Promise.all(arrWords.map(async (currentValue) => {
+            //check for 24 hours or range of dates, smthng wrong with                    
+            // calculating dates on server
+                     if (currentValue.check24){
+                         resp = await requestToFindTenders(currentValue.wordFind,
                         (from),
                         (to));
-                    return resp
-                } else{
-                    return await requestToFindTenders(currentValue.wordFind,
-                        (currentValue.dateFromP),
-                        (currentValue.dateToP));
-                }
-            })
-            )
+                         return resp
+                     }else{
+                         return await requestToFindTenders(currentValue.wordFind,
+                             (currentValue.dateFromP),
+                             (currentValue.dateToP));
+                     }
+        })
+        )
     } catch (err){
-            return res.status(400).json({msg:err})
+        return res.status(400).json({msg:err})
     }
 }
 
 router.get('/',ensureAuthenticated, async(req, res)=>{
-        let tenders = await getArrTenders(req.query.user, req.query.from, req.query.to);
-        res.send([].concat.apply([], tenders))
+    const tenders = await getArrTenders(req.query.user, req.query.from, req.query.to);
+    res.send([].concat.apply([], tenders))
 });
 module.exports = router;

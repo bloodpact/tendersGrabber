@@ -28,14 +28,13 @@ app.use(passport.initialize());
 const links = require('./routes/links');
 const users = require('./routes/users');
 const results = require('./routes/results');
-const email = require('./routes/email')
+const news = require('./routes/news');
+const email = require('./routes/email');
 
 
 require('./config/passport')(passport);
-
 //DB CONN
-const db = require('./config/env')
-console.log(process.env.NODE_ENV)
+const db = require('./config/env');
 mongoose.connect(db.mongoURL,{
     useNewUrlParser: true
 })
@@ -47,6 +46,7 @@ mongoose.connect(db.mongoURL,{
 app.use('/links', links);
 app.use('/users', users);
 app.use('/results', results);
+app.use('/news', news);
 app.use('/email', email);
 
 const port = process.env.PORT || 5000;
