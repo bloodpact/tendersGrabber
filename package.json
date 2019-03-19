@@ -4,8 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "dev": "babel app.js --out-dir prod-server && nodemon app",
-    "prod": "set NODE_ENV=production && nodemon app"
+    "start": "node app"
   },
   "author": "",
   "license": "ISC",

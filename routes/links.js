@@ -46,10 +46,14 @@ router.put('/:id',  ensureAuthenticated, (req, res)=>{
                 check24 : req.body.check24,
                 dateFromP : formateDate(req.body.dateFrom),
                 dateToP :formateDate(req.body.dateTo)
-        }
+            }
+        },
+        (err) => {
+            if(err){
+                res.status(400).json({msg:err})
+            }
         }
     );
-    res.end()
 })
 
 router.post('/',ensureAuthenticated, (req, res) =>{
@@ -65,7 +69,7 @@ router.post('/',ensureAuthenticated, (req, res) =>{
     } else {
         const newLink = {
             wordFind: req.body.wordFind,
-            user: req.body.id,
+            user: req.body.user,
             dateFrom:req.body.dateFrom,
             dateTo: req.body.dateTo,
             dateFromP: moment(req.body.dateFrom).format("DD.MM.YYYY"),

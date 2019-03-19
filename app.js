@@ -34,7 +34,7 @@ const email = require('./routes/email');
 
 require('./config/passport')(passport);
 //DB CONN
-const db = require('./config/env');
+const db = require('./config/db');
 mongoose.connect(db.mongoURL,{
     useNewUrlParser: true
 })

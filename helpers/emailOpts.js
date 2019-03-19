@@ -12,9 +12,8 @@ module.exports ={
         port: 465,
         secure: true,
         auth: {
-            // should be replaced with real sender's account
-            user: 'user',
-            pass:'pass'
+            user: 'zakupkigov.grabber@mail.ru',
+            pass:'Qwertyuiop1!'
         }
     }
 };
