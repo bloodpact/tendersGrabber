@@ -11,7 +11,6 @@ const User = mongoose.model('users');
 router.post("/login", (req, res, next) => {
     passport.authenticate('local', {session: false}, (err, user, info) => {
         if (err) {
-            console.log(err)
             return next(err);
         }
         if (!user) {
@@ -25,7 +24,7 @@ router.post("/login", (req, res, next) => {
             return res.status(200).json({user, token});
         })
     })(req, res, next)
-})
+});
 router.get('/register', (req, res)=>{
     res.render('users/register')
 });

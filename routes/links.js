@@ -4,10 +4,9 @@ const mongoose = require('mongoose');
 const {ensureAuthenticated} = require('../config/auth');
 const {formateDate} = require('../helpers/dateFormater');
 const moment = require('moment');
-
 require('../models/Link');
-const Link = mongoose.model('links');
 
+const Link = mongoose.model('links');
 router.get('/', ensureAuthenticated, (req, res) => {
     Link.find({
         user: req.query.user
@@ -54,7 +53,7 @@ router.put('/:id',  ensureAuthenticated, (req, res)=>{
             }
         }
     );
-})
+});
 
 router.post('/',ensureAuthenticated, (req, res) =>{
     let errors = [];
@@ -82,7 +81,7 @@ router.post('/',ensureAuthenticated, (req, res) =>{
              return  res.status(400).json({msg:err})
             })
     }
-})
+});
 
 router.delete('/:id', ensureAuthenticated,(req, res)=>{
     Link.deleteOne({

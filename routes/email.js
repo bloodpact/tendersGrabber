@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const nodeMailer = require('nodemailer')
+const nodeMailer = require('nodemailer');
 const hbs = require('nodemailer-express-handlebars');
 const {hbsOpts, transportOpts} = require('../helpers/emailOpts');
-
 
 router.get('/', function (req, res, next) {
     let transporter = nodeMailer.createTransport(transportOpts);
@@ -16,7 +15,7 @@ router.get('/', function (req, res, next) {
             links: req.query.links
         }
     };
-    console.log(mailOptions.context)
+    console.log(mailOptions.context);
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
             return console.log(error);

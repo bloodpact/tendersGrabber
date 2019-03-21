@@ -55,10 +55,10 @@ async function getArrTenders(userID, from, to){
             // calculating dates on server
                      if (currentValue.check24){
                          resp = await requestToFindTenders(currentValue.wordFind,
-                        (from),
-                        (to));
+                             (from),
+                             (to));
                          return resp
-                     }else{
+                     } else {
                          return await requestToFindTenders(currentValue.wordFind,
                              (currentValue.dateFromP),
                              (currentValue.dateToP));
@@ -70,7 +70,7 @@ async function getArrTenders(userID, from, to){
     }
 }
 
-router.get('/',ensureAuthenticated, async(req, res)=>{
+router.get('/',ensureAuthenticated, async(req, res) => {
     const tenders = await getArrTenders(req.query.user, req.query.from, req.query.to);
     res.send([].concat.apply([], tenders))
 });
